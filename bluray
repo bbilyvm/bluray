@@ -220,26 +220,30 @@ function _install_convert() {
 
 # 有 root 权限的盒子安装 bdinfo
 function _install_bdinfo() {
-    if ! command -v svn &>/dev/null; then
-        echo "[INFO] Subversion not found, installing..."
-        sudo apt update && sudo apt install -y subversion
-        if ! command -v svn &>/dev/null; then
-            echo "[ERROR] Subversion install failed!"
-            exit 1
-        fi
+    if ! command -v git &>/dev/null; then
+        echo "[INFO] Git not found, installing..."
+        sudo apt update && sudo apt install -y git
     fi
 
-    if [[ ! -f /etc/abox/app/BDinfoCli.0.7.3/BDInfo.exe ]]; then
+    if [[ ! -d /etc/abox/app/BDinfoCli.0.7.3 ]]; then
         mkdir -p /etc/abox/app
         cd /etc/abox/app
-        svn co https://github.com/Aniverse/bluray/tree/master/tools/BDinfoCli.0.7.3
-        mv -f BDinfoCli.0.7.3 BDinfoCli
+
+        echo "[INFO] Cloning Aniverse/bluray repo..."
+        git clone --depth=1 https://github.com/Aniverse/bluray temp_bluray
+
+        echo "[INFO] Copying BDinfoCli.0.7.3..."
+        cp -r temp_bluray/tools/BDinfoCli.0.7.3 .
+
+        echo "[INFO] Cleaning up..."
+        rm -rf temp_bluray
     fi
 
     if [[ ! -f /etc/abox/app/bdinfocli.exe ]]; then
-        wget https://github.com/Aniverse/bluray/tree/master/tools/bdinfocli.exe -qO /etc/abox/app/bdinfocli.exe
+        wget https://github.com/Aniverse/bluray/raw/master/tools/bdinfocli.exe -qO /etc/abox/app/bdinfocli.exe
     fi
 }
+
 
 
 

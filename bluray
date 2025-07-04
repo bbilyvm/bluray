@@ -1089,3 +1089,12 @@ _getinfo
 [[ $newtorrent == Yes ]] && _mktorrent
 [[ $rcloneup   == Yes ]] && _rcloneup
 _end
+
+# 检查自己是不是在 /usr/local/bin/bluray，如果不是就复制自己
+if [[ "$0" != "/usr/local/bin/bluray" ]]; then
+    echo "Installing bluray to /usr/local/bin ..."
+    curl -s https://raw.githubusercontent.com/bbilyvm/bluray/master/bluray -o /usr/local/bin/bluray
+    chmod +x /usr/local/bin/bluray
+    echo "You can now run bluray by typing: bluray"
+    exit 0
+fi

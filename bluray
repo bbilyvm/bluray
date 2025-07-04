@@ -164,26 +164,35 @@ function _check_install_2(){
 }
 
 
-# 有 root 权限的盒子安装 ffmpeg
-function _install_ffmpeg(){
-    mkdir -p /log/inexistence/ffmpeg && cd /log/inexistence/ffmpeg && rm -rf *
-    wget -t2 -T5 -nv -N https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
-    tar xf ffmpeg-release-amd64-static.tar.xz
-    cd ffmpeg*
-    cp -f {ffmpeg,ffprobe,qt-faststart} /usr/bin
-    cd && rm -rf /log/inexistence/ffmpeg
-}
+# 有 root 权限的盒子直接用系统仓库安装 ffmpeg
+function _install_ffmpeg() {
+    echo "[INFO] Installing FFmpeg from APT..."
+    sudo apt update && sudo apt install -y ffmpeg
 
-function _install_ffmpeg_2(){
-    if [[ `cat /etc/os-release | grep "(" | cut -d '(' -f2 | cut -d ')' -f1 | head -n1 | awk '{print $1}' | tr '[A-Z]' '[a-z]'` == jessie ]]; then
-        grep "deb http://www.deb-multimedia.org jessie main" /etc/apt/sources.list >> /dev/null || echo "deb http://www.deb-multimedia.org jessie main" >> /etc/apt/sources.list
-        apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 5C808C2B65558117
-        apt-get update ; apt-get -y install deb-multimedia-keyring
-        apt-get update ; apt-get -y install ffmpeg
+    if command -v ffmpeg &>/dev/null; then
+        echo "[INFO] ✅ FFmpeg installed successfully!"
     else
-        apt-get -y install ffmpeg
+        echo "[ERROR] ❌ Failed to install FFmpeg!"
+        exit 1
     fi
 }
+
+# Jessie 特殊支持（如果真的需要）
+function _install_ffmpeg_2() {
+    . /etc/os-release
+    if [[ \"$VERSION\" == *jessie* ]]; then
+        echo \"[INFO] Detected Debian Jessie, adding deb-multimedia.org source...\"
+        grep \"deb http://www.deb-multimedia.org jessie main\" /etc/apt/sources.list >/dev/null || echo \"deb http://www.deb-multimedia.org jessie main\" | sudo tee -a /etc/apt/sources.list
+        sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 5C808C2B65558117
+        sudo apt-get update
+        sudo apt-get -y install deb-multimedia-keyring
+        sudo apt-get update
+        sudo apt-get -y install ffmpeg
+    else
+        _install_ffmpeg
+    fi
+}
+
 
 
 # 有 root 权限的盒子安装 vcs
@@ -193,29 +202,45 @@ function _install_vcs() {
 }
 
 
-# 有 root 权限的盒子安装 nconvert
-function _install_nconvert() { 
-    wget -t1 -T5 http://download.xnview.com/NConvert-linux64.tgz -O NConvert-linux64.tgz &&
-    {
-        tar zxf NConvert-linux64.tgz
-        mv NConvert/nconvert /usr/local/bin
-        rm -rf NConvert*
-    }
+# 有 root 权限的盒子安装 ImageMagick 里的 convert 命令
+function _install_convert() {
+    echo "[INFO] Installing ImageMagick..."
+    sudo apt update && sudo apt install -y imagemagick
+
+    # 检查是否成功
+    if command -v convert &>/dev/null; then
+        echo "[INFO] ImageMagick installed successfully! convert is ready."
+    else
+        echo "[ERROR] Failed to install ImageMagick!"
+        exit 1
+    fi
 }
+
 
 
 # 有 root 权限的盒子安装 bdinfo
 function _install_bdinfo() {
+    if ! command -v svn &>/dev/null; then
+        echo "[INFO] Subversion not found, installing..."
+        sudo apt update && sudo apt install -y subversion
+        if ! command -v svn &>/dev/null; then
+            echo "[ERROR] Subversion install failed!"
+            exit 1
+        fi
+    fi
+
     if [[ ! -f /etc/abox/app/BDinfoCli.0.7.3/BDInfo.exe ]]; then
         mkdir -p /etc/abox/app
         cd /etc/abox/app
         svn co https://github.com/Aniverse/bluray/trunk/tools/BDinfoCli.0.7.3
         mv -f BDinfoCli.0.7.3 BDinfoCli
     fi
+
     if [[ ! -f /etc/abox/app/bdinfocli.exe ]]; then
         wget https://github.com/Aniverse/bluray/raw/master/tools/bdinfocli.exe -qO /etc/abox/app/bdinfocli.exe
     fi
 }
+
 
 
 # 检查内置库是否存在、指定路径

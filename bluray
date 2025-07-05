@@ -830,7 +830,7 @@ function _debug() {
     echo -e "${normal}"
 
     echo -e "Built-in  Used = $USE_Built_IN"
-    echo -e "nconvert  Used = $convert"
+    echo -e "convert  Used = $convert"
     echo -e "bdinfocli Used = $using_bdinfo"
     echo -e "bdinfocli Path = $bdinfocli_path"
     ls -la $bdinfocli_path

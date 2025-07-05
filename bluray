@@ -58,6 +58,23 @@ bash <(curl -s https://raw.githubusercontent.com/bbilyvm/bluray/master/bluray)
 wget -qO /usr/local/bin/bluray https://raw.githubusercontent.com/bbilyvm/bluray/master/bluray && chmod +x /usr/local/bin/bluray
 }
 # --------------------------------------------------------------------------------
+
+# 自动安装自身脚本到 /usr/local/bin/bluray 并退出，避免多次执行
+target_path="/usr/local/bin/bluray"
+
+if [[ "$(realpath "$0")" != "$target_path" ]]; then
+    echo "[INFO] Installing bluray script to $target_path ..."
+    if curl -fsSL https://raw.githubusercontent.com/bbilyvm/bluray/master/bluray -o "$target_path"; then
+        chmod +x "$target_path"
+        echo "[INFO] Installation complete. You can now run 'bluray' directly."
+        exit 0
+    else
+        echo "[ERROR] Failed to download the bluray script."
+        exit 1
+    fi
+fi
+
+
 black=$(tput setaf 0); red=$(tput setaf 1); green=$(tput setaf 2); yellow=$(tput setaf 3);
 blue=$(tput setaf 4); magenta=$(tput setaf 5); cyan=$(tput setaf 6); white=$(tput setaf 7);
 on_red=$(tput setab 1); on_green=$(tput setab 2); on_yellow=$(tput setab 3); on_blue=$(tput setab 4);

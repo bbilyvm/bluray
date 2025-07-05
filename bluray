@@ -323,7 +323,7 @@ function _intro() {
                                  apt-get install -y mono-complete mktorrent bc # imagemagick
                                  [[ ! $( command -v ffmpeg   ) ]] && _install_ffmpeg
                                  # [[ ! $( command -v vcs      ) ]] && _install_vcs
-                                 [[ ! $( command -v nconvert ) ]] && _install_convert
+                                 [[ ! $( command -v convert ) ]] && _install_convert
                                  _install_bdinfo ; installdone=1 ; appmissing=No ; _check_install_2
                              fi ;;
                 02 | 2)      # 无需 root，使用脚本内置库运行

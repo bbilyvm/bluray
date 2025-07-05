@@ -301,44 +301,23 @@ function _intro() {
     [[ $appmissing == Yes ]] && _logo
     [[ $NoInstall == 1 ]] && echo -e "${bold}We will use bulit-in library ...${normal}" && _check_library
 
-    while [[ $appmissing == Yes ]]; do
-        echo -e "\n01) ${cyan}Install them to system with root privilege${normal}"
-        echo "02) ${cyan}Use bluray script built-in library${normal}"
-        echo "03) ${cyan}Carry on anyway${normal}"
-        echo "04) ${cyan}Exit${normal}"
-        echo -e "${bold}Oooops, ${baihongse}${tmpmissingapp%?}${normal}${bold} is missing, without them the script could't work properly"
-        installdone=0
+    if [[ $appmissing == Yes ]]; then
+        echo -e "\n${bold}Oooops, ${baihongse}${tmpmissingapp%?}${normal}${bold} is missing, installing automatically...${normal}"
 
-        while [[ $installdone = 0 ]]; do
-            installresponce=0
-            while [[ $installresponce = 0 ]]; do
-                installresponce=1
-                echo -n "${yellow}${bold}What would you like to do?${normal} (Default ${cyan}04${normal}) " ; read -e responce ; echo
-            done
-            case $responce in
-                01 | 1)      # 使用 root 权限安装所需软件到系统目录
-                             if [[ $NoRoot == 1 ]]; then
-                                 installresponce=0 && echo -e "${baihongse}${bold}ERROR${normal}${bold} You DONOT have ROOT privilege${normal}\n"
-                             else
-                                 apt-get install -y mono-complete mktorrent bc # imagemagick
-                                 [[ ! $( command -v ffmpeg   ) ]] && _install_ffmpeg
-                                 # [[ ! $( command -v vcs      ) ]] && _install_vcs
-                                 [[ ! $( command -v convert ) ]] && _install_convert
-                                 _install_bdinfo ; installdone=1 ; appmissing=No ; _check_install_2
-                             fi ;;
-                02 | 2)      # 无需 root，使用脚本内置库运行
-                             echo "${bold}The script will use built-in library ...${normal}"
-                             _check_library
-                             installdone=1 ; appmissing=No ; _check_install_2 ;;
-                03 | 3)      # 继续运行
-    						 installdone=1 ; appmissing=No2 ;;
-                04 | 4 | "") # 退出脚本
-                             echo "${bold}Exiting script ...${normal}" ; exit 0 ;;
-                *)           # 重新输入
-                             installresponce=0 ;;
-            esac
-        done
-    done
+        if [[ $NoRoot == 1 ]]; then
+            echo -e "${baihongse}${bold}ERROR${normal}${bold} You DONOT have ROOT privilege${normal}\n"
+            echo "${bold}Exiting script ...${normal}" ; exit 0
+        else
+            echo -e "${bold}Installing dependencies...${normal}\n"
+            apt-get update
+            apt-get install -y mono-complete mktorrent bc imagemagick
+            [[ ! $( command -v ffmpeg   ) ]] && _install_ffmpeg
+            [[ ! $( command -v convert ) ]] && _install_convert
+            _install_bdinfo
+            appmissing=No
+            _check_install_2
+        fi
+    fi
 
     _logo
     [[ $NoRoot == 1 ]] && echo -e "\n${ZY}Since you run this script without root privileges, BDISO is not supported${normal}"
@@ -348,6 +327,7 @@ function _intro() {
         echo -e "\n${bold}Good, All the needed softwares are installed ...${normal}"
     fi
 }
+
 
 
 

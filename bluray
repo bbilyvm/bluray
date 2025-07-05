@@ -926,39 +926,40 @@ function _takescreenshots() {
     foldername=$(basename "$outputpath")
     prefixname="${foldername// /"."}"
 
-    i=0  # 初始化计数器，防止未定义错误
+    i=0  # 初始化时间
 
     for c in {01..10}; do
 
         i=$(( i + timestampsetting ))
         timestamp=$(date -u -d @$i +%H:%M:%S)
 
-        [[ $DeBUG == 0 ]] && echo -ne "Writing ${prefixname}_screenshot${c}.png from timestamp $timestamp ... "
-        [[ $DeBUG == 1 ]] && echo -e "\n${bailanse}Writing ${prefixname}_screenshot${c}.png from timestamp $timestamp\n${normal}"
+        [[ $DeBUG == 0 ]] && echo -ne "Writing ${prefixname}.${c}.png from timestamp $timestamp ... "
+        [[ $DeBUG == 1 ]] && echo -e "\n${bailanse}Writing ${prefixname}.${c}.png from timestamp $timestamp\n${normal}"
 
         if [[ $resolution == 2160p ]] || [[ $resolution == 1080p ]] || [[ $resolution == input ]] || [[ $resolution == input_opt ]] || [[ $resolution == autoar ]]; then
             if [[ $DeBUG == 0 ]]; then
-                ffmpeg -y -ss $timestamp -i "$main_m2ts_path" -ss 00:00:01 -frames:v 1 -s $fenbianlv "${outputpath}/${prefixname}_screenshot${c}.orgin.png" > /dev/null 2>&1
+                ffmpeg -y -ss $timestamp -i "$main_m2ts_path" -ss 00:00:01 -frames:v 1 -s $fenbianlv "${outputpath}/${prefixname}.${c}.orgin.png" > /dev/null 2>&1
             else
-                ffmpeg -y -ss $timestamp -i "$main_m2ts_path" -ss 00:00:01 -frames:v 1 -s $fenbianlv "${outputpath}/${prefixname}_screenshot${c}.orgin.png"
+                ffmpeg -y -ss $timestamp -i "$main_m2ts_path" -ss 00:00:01 -frames:v 1 -s $fenbianlv "${outputpath}/${prefixname}.${c}.orgin.png"
             fi
-            [[ $convert == 1 ]] && convert "${outputpath}/${prefixname}_screenshot${c}.orgin.png" "${outputpath}/${prefixname}_screenshot${c}.png"
+            [[ $convert == 1 ]] && convert "${outputpath}/${prefixname}.${c}.orgin.png" "${outputpath}/${prefixname}.${c}.png"
         elif [[ $resolution == auto ]]; then
             if [[ $DeBUG == 0 ]]; then
-                ffmpeg -y -ss $timestamp -i "$main_m2ts_path" -ss 00:00:01 -frames:v 1 "${outputpath}/${prefixname}_screenshot${c}.orgin.png" > /dev/null 2>&1
+                ffmpeg -y -ss $timestamp -i "$main_m2ts_path" -ss 00:00:01 -frames:v 1 "${outputpath}/${prefixname}.${c}.orgin.png" > /dev/null 2>&1
             else
-                ffmpeg -y -ss $timestamp -i "$main_m2ts_path" -ss 00:00:01 -frames:v 1 "${outputpath}/${prefixname}_screenshot${c}.orgin.png"
+                ffmpeg -y -ss $timestamp -i "$main_m2ts_path" -ss 00:00:01 -frames:v 1 "${outputpath}/${prefixname}.${c}.orgin.png"
             fi
-            [[ $convert == 1 ]] && convert "${outputpath}/${prefixname}_screenshot${c}.orgin.png" "${outputpath}/${prefixname}_screenshot${c}.png"
+            [[ $convert == 1 ]] && convert "${outputpath}/${prefixname}.${c}.orgin.png" "${outputpath}/${prefixname}.${c}.png"
         fi
 
-        [[ $DeBUG == 0 ]] && echo -e "${green}DONE${normal}" && rm -f "${outputpath}/${prefixname}_screenshot${c}.orgin.png"
+        [[ $DeBUG == 0 ]] && echo -e "${green}DONE${normal}" && rm -f "${outputpath}/${prefixname}.${c}.orgin.png"
         [[ $DeBUG == 1 ]] && echo -e "\n${green}DONE${normal}\n"
 
     done
 
     echo -e "\n\n${bold}${green}Taking screenshots DONE${normal}\n\n"
 }
+
 
 
 

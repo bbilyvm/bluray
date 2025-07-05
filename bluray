@@ -67,12 +67,13 @@ if [[ "$(realpath "$0")" != "$target_path" ]]; then
     if curl -fsSL https://raw.githubusercontent.com/bbilyvm/bluray/master/bluray -o "$target_path"; then
         chmod +x "$target_path"
         echo "[INFO] Installation complete. You can now run 'bluray' directly."
-        exit 0
+        # 这里不要 exit，让脚本继续后续流程安装
     else
         echo "[ERROR] Failed to download the bluray script."
         exit 1
     fi
 fi
+
 
 
 black=$(tput setaf 0); red=$(tput setaf 1); green=$(tput setaf 2); yellow=$(tput setaf 3);

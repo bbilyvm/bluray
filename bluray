@@ -1090,11 +1090,22 @@ _getinfo
 [[ $rcloneup   == Yes ]] && _rcloneup
 _end
 
-# 检查自己是不是在 /usr/local/bin/bluray，如果不是就复制自己
+# ========= 自动安装到 /usr/local/bin ==========
 if [[ "$0" != "/usr/local/bin/bluray" ]]; then
-    echo "Installing bluray to /usr/local/bin ..."
-    curl -s https://raw.githubusercontent.com/bbilyvm/bluray/master/bluray -o /usr/local/bin/bluray
-    chmod +x /usr/local/bin/bluray
-    echo "You can now run bluray by typing: bluray"
-    exit 0
+  echo "[INFO] Installing bluray to /usr/local/bin ..."
+  sudo curl -s https://raw.githubusercontent.com/bbilyvm/bluray/master/bluray -o /usr/local/bin/bluray
+  sudo chmod +x /usr/local/bin/bluray
+
+  echo "[OK] Installed as /usr/local/bin/bluray"
+
+  # 自动检测 /usr/local/bin 是否在 PATH，不在就提示
+  if ! echo "$PATH" | grep -q "/usr/local/bin"; then
+    echo "[WARN] /usr/local/bin is not in your PATH!"
+    echo "[HINT] Please run: export PATH=\$PATH:/usr/local/bin"
+    echo "[HINT] Or add it to ~/.bashrc"
+  fi
+
+  echo "[INFO] Now you can run it by typing: bluray"
+  exit 0
 fi
+
